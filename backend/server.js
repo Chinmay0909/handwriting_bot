@@ -269,6 +269,7 @@ async function createFontForgeScript(svgDir, fontName, outputPath) {
   
   const scriptContent = `#!/usr/bin/env python3
 import fontforge
+import psMat
 import os
 import sys
 
@@ -332,40 +333,40 @@ for i, char in enumerate(charset):
                 target_width = 500
                 
                 scale = min(target_height / height, target_width / width) if height > 0 and width > 0 else 1
-                
+
                 # Transform the glyph
-                matrix = fontforge.psMat.scale(scale, scale)
+                matrix = psMat.scale(scale, scale)
                 glyph.transform(matrix)
-                
+
                 # Center horizontally and position on baseline
                 bbox = glyph.boundingBox()
                 x_offset = (target_width - (bbox[2] - bbox[0])) / 2 - bbox[0]
                 y_offset = 50 - bbox[1]  # Slightly raised from baseline for better appearance
-                
-                matrix = fontforge.psMat.translate(x_offset, y_offset)
+
+                matrix = psMat.translate(x_offset, y_offset)
                 glyph.transform(matrix)
                 
-                # Set width - extremely tight letter spacing, wider word spacing
+                # Set width - natural handwriting spacing
                 bbox = glyph.boundingBox()
                 char_width = bbox[2] - bbox[0]
 
-                # Ultra-tight letter spacing (letters almost touching)
-                # Wider space between words for clear separation
+                # Natural letter spacing with comfortable gaps
+                # Balanced word spacing for readability
                 if char == ' ':
-                    glyph.width = 800  # Space between words
+                    glyph.width = 450  # Word spacing - moderate
                 elif char in '.,;:!?':
-                    glyph.width = int(char_width * 1.005)  # Punctuation: 0.5% padding
+                    glyph.width = int(char_width * 1.25)  # Punctuation: 25% padding
                 elif char in 'ij|lI':
-                    glyph.width = int(char_width * 1.005)  # Narrow letters: 0.5% padding
+                    glyph.width = int(char_width * 1.30)  # Narrow letters: 30% padding
                 elif char in 'mMwW':
-                    glyph.width = int(char_width * 1.005)  # Wide letters: 0.5% padding
+                    glyph.width = int(char_width * 1.35)  # Wide letters: 35% padding
                 elif char in 'tfrk':
-                    glyph.width = int(char_width * 1.005)  # Medium letters: 0.5% padding
+                    glyph.width = int(char_width * 1.28)  # Medium letters: 28% padding
                 else:
-                    glyph.width = int(char_width * 1.005)  # Default: 0.5% padding (ultra-tight)
+                    glyph.width = int(char_width * 1.32)  # Default: 32% padding
 
-                # Nearly zero side bearings - letters will touch
-                side_bearing = 0  # No side bearing - letters touching
+                # Moderate side bearings for natural spacing
+                side_bearing = int(char_width * 0.08)  # 8% of character width
                 glyph.left_side_bearing = side_bearing
                 glyph.right_side_bearing = side_bearing
                     
