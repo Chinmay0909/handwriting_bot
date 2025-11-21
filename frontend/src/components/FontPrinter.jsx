@@ -7,6 +7,7 @@ const FontPrinter = () => {
   const [fontName, setFontName] = useState('');
   const [text, setText] = useState('');
   const [documentFile, setDocumentFile] = useState(null);
+  const [fontSize, setFontSize] = useState(18); // Default font size
   const fontInputRef = useRef(null);
   const docInputRef = useRef(null);
 
@@ -108,12 +109,40 @@ const FontPrinter = () => {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Type or paste your text here..."
                 style={{
-                  fontSize: '18px',
+                  fontSize: `${fontSize}px`,
                   lineHeight: '2',
                   color: '#1f2937'
                 }}
                 className="w-full h-[500px] p-6 border-2 border-gray-300 rounded-2xl focus:border-teal-500 focus:ring-4 focus:ring-teal-100 focus:outline-none resize-none shadow-inner transition-all text-gray-800 bg-white"
               />
+
+              {/* Font Size Slider */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-indigo-900 font-bold text-base flex items-center">
+                    <Type className="w-5 h-5 mr-2" />
+                    Font Size
+                  </label>
+                  <span className="text-indigo-700 font-bold text-lg bg-white px-4 py-1 rounded-xl shadow-sm">
+                    {fontSize}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="12"
+                  max="32"
+                  value={fontSize}
+                  onChange={(e) => setFontSize(Number(e.target.value))}
+                  className="w-full h-3 bg-indigo-200 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${((fontSize - 12) / 20) * 100}%, #e0e7ff ${((fontSize - 12) / 20) * 100}%, #e0e7ff 100%)`
+                  }}
+                />
+                <div className="flex justify-between text-xs text-indigo-600 mt-2">
+                  <span>Small (12px)</span>
+                  <span>Large (32px)</span>
+                </div>
+              </div>
 
               {fontFile && text && (
                 <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-4 flex items-center">
@@ -273,9 +302,10 @@ const FontPrinter = () => {
               <div className="relative z-10 pl-8">
                 {text ? (
                   <p
-                    className="text-gray-800 whitespace-pre-wrap text-lg leading-[2.5]"
+                    className="text-gray-800 whitespace-pre-wrap leading-[2.5]"
                     style={{
-                      fontFamily: fontName ? `'${fontName}', Arial, sans-serif` : 'Arial, sans-serif'
+                      fontFamily: fontName ? `'${fontName}', Arial, sans-serif` : 'Arial, sans-serif',
+                      fontSize: `${fontSize}px`
                     }}
                   >
                     {text}
