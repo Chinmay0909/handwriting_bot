@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:\\Users\\CHINMAY SANADI\\Documents\\Projects\\cgfont\\frontend\"\" | grep -E \"config)",
+      "Bash(vite \")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
