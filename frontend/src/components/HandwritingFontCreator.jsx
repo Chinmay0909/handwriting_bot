@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Download, Upload, Grid, Type, CheckCircle, Loader, AlertCircle, Sparkles, FileImage, Zap } from 'lucide-react';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 const HandwritingFontCreator = () => {
   const [step, setStep] = useState(1);
@@ -351,7 +351,7 @@ const HandwritingFontCreator = () => {
                     type="text"
                     value={fontName}
                     onChange={(e) => setFontName(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
-                    className="w-full px-5 py-4 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 focus:outline-none text-lg transition-all"
+                    className="w-full px-5 py-4 border-2 border-gray-300 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 focus:outline-none text-lg transition-all text-gray-800"
                     placeholder="MyHandwriting"
                   />
                 </label>

@@ -108,18 +108,18 @@ const FontPrinter = () => {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Type or paste your text here..."
                 style={{
-                  fontFamily: fontName || 'inherit',
                   fontSize: '18px',
-                  lineHeight: '2'
+                  lineHeight: '2',
+                  color: '#1f2937'
                 }}
-                className="w-full h-[500px] p-6 border-2 border-gray-300 rounded-2xl focus:border-teal-500 focus:ring-4 focus:ring-teal-100 focus:outline-none resize-none shadow-inner transition-all"
+                className="w-full h-[500px] p-6 border-2 border-gray-300 rounded-2xl focus:border-teal-500 focus:ring-4 focus:ring-teal-100 focus:outline-none resize-none shadow-inner transition-all text-gray-800 bg-white"
               />
 
               {fontFile && text && (
                 <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-4 flex items-center">
                   <CheckCircle2 className="w-5 h-5 text-green-600 mr-2" />
                   <p className="text-green-700 font-semibold">
-                    Text is displayed in: {fontName}
+                    Font '{fontName}' will be applied in notebook preview
                   </p>
                 </div>
               )}
@@ -269,10 +269,15 @@ const FontPrinter = () => {
               {/* Red margin line */}
               <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-red-300 pointer-events-none"></div>
 
-              {/* Text content - NOT styled with custom font */}
+              {/* Text content - Styled with custom font */}
               <div className="relative z-10 pl-8">
                 {text ? (
-                  <p className="text-gray-800 whitespace-pre-wrap text-lg leading-[2.5]">
+                  <p
+                    className="text-gray-800 whitespace-pre-wrap text-lg leading-[2.5]"
+                    style={{
+                      fontFamily: fontName ? `'${fontName}', Arial, sans-serif` : 'Arial, sans-serif'
+                    }}
+                  >
                     {text}
                   </p>
                 ) : (
@@ -295,7 +300,7 @@ const FontPrinter = () => {
             <div className="flex items-start">
               <Sparkles className="w-6 h-6 text-blue-600 mr-3 mt-0.5 flex-shrink-0" />
               <p className="text-blue-900 text-base">
-                <strong className="font-bold">Note:</strong> The text input area on the left shows your text in the custom font. The notebook preview displays it in regular font for better readability on lined paper.
+                <strong className="font-bold">Note:</strong> The text input area uses normal font for easy typing. Your custom handwriting font will be applied only in the notebook preview below, showing how your text will look on lined paper.
               </p>
             </div>
           </div>

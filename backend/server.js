@@ -11,10 +11,13 @@ require('dotenv').config();
 
 const execPromise = promisify(exec);
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+}));
 app.use(express.json());
 app.use('/downloads', express.static('downloads'));
 
@@ -68,25 +71,28 @@ async function detectCharacterBounds(imagePath) {
       .greyscale()
       .raw()
       .toBuffer({ resolveWithObject: true });
-    
+
     const width = info.width;
     const height = info.height;
-    
+
     let minX = width;
     let minY = height;
     let maxX = 0;
     let maxY = 0;
     let hasContent = false;
-    
+    let pixelCount = 0;
+
     // Scan image to find bounds of non-white pixels
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const idx = y * width + x;
         const pixelValue = data[idx];
-        
+
         // If pixel is dark (not white/near-white)
-        if (pixelValue < 240) {
+        // More aggressive threshold to ignore light gray from borders
+        if (pixelValue < 200) {
           hasContent = true;
+          pixelCount++;
           minX = Math.min(minX, x);
           minY = Math.min(minY, y);
           maxX = Math.max(maxX, x);
@@ -94,21 +100,40 @@ async function detectCharacterBounds(imagePath) {
         }
       }
     }
-    
+
     if (!hasContent) {
       return null; // No character found
     }
-    
-    // Add small margin to bounds (2-3 pixels)
-    const margin = 2;
+
+    // Filter out if too few pixels (likely just noise or border artifacts)
+    const minPixelCount = 50; // Minimum pixels to consider valid character
+    if (pixelCount < minPixelCount) {
+      console.log(`Character has only ${pixelCount} pixels, likely noise`);
+      return null;
+    }
+
+    // Add margin to bounds for better appearance
+    const margin = 5; // Increased margin for cleaner extraction
     minX = Math.max(0, minX - margin);
     minY = Math.max(0, minY - margin);
     maxX = Math.min(width - 1, maxX + margin);
     maxY = Math.min(height - 1, maxY + margin);
-    
+
     const boundWidth = maxX - minX + 1;
     const boundHeight = maxY - minY + 1;
-    
+
+    // Filter out if bounds are too small or too large (likely artifacts)
+    if (boundWidth < 5 || boundHeight < 5) {
+      console.log(`Character bounds too small: ${boundWidth}×${boundHeight}`);
+      return null;
+    }
+
+    // Filter out if bounds cover almost entire cell (likely border was captured)
+    if (boundWidth > width * 0.95 || boundHeight > height * 0.95) {
+      console.log(`Character bounds too large: ${boundWidth}×${boundHeight}, likely border captured`);
+      return null;
+    }
+
     return {
       left: minX,
       top: minY,
@@ -126,14 +151,14 @@ async function detectCharacterBounds(imagePath) {
 async function extractCharacters(imagePath) {
   const image = sharp(imagePath);
   const metadata = await image.metadata();
-  
+
   const cellWidth = Math.floor(metadata.width / COLS);
   const cellHeight = Math.floor(metadata.height / ROWS);
-  
+
   // Label area is 20% of cell height (same as frontend template)
   const labelHeight = Math.floor(cellHeight * 0.2);
   const writingAreaHeight = cellHeight - labelHeight;
-  
+
   const characters = {};
   const tempFiles = [];
 
@@ -143,29 +168,30 @@ async function extractCharacters(imagePath) {
     const char = CHARSET[i];
     const col = i % COLS;
     const row = Math.floor(i / COLS);
-    
+
     const x = col * cellWidth;
     const y = row * cellHeight;
-    
-    // Minimal padding only on sides and bottom (label area already excluded)
-    const sidePadding = 5;
-    const bottomPadding = 5;
-    
-    // Extract only the writing area (skip label area completely)
+
+    // Increased padding to avoid borders - more aggressive cropping
+    const sidePadding = Math.floor(cellWidth * 0.12); // 12% padding on each side
+    const topPadding = Math.floor(writingAreaHeight * 0.08); // 8% padding from top of writing area
+    const bottomPadding = Math.floor(writingAreaHeight * 0.08); // 8% padding from bottom
+
+    // Extract only the writing area with generous padding to avoid grid lines
     const extractX = x + sidePadding;
-    const extractY = y + labelHeight; // Start after label
+    const extractY = y + labelHeight + topPadding; // Start after label + top padding
     const extractWidth = Math.max(cellWidth - (sidePadding * 2), 1);
-    const extractHeight = Math.max(writingAreaHeight - bottomPadding, 1);
-    
+    const extractHeight = Math.max(writingAreaHeight - topPadding - bottomPadding, 1);
+
     const tempPath = path.join('temp', `char_temp_${i}_${char.charCodeAt(0)}.png`);
     const outputPath = path.join('temp', `char_${i}_${char.charCodeAt(0)}.png`);
     tempFiles.push(tempPath);
     tempFiles.push(outputPath);
-    
+
     await fs.mkdir('temp', { recursive: true });
-    
+
     try {
-      // Step 1: Extract writing area only (label area excluded)
+      // Step 1: Extract writing area with aggressive cropping to avoid borders
       await image
         .clone()
         .extract({
@@ -176,19 +202,19 @@ async function extractCharacters(imagePath) {
         })
         .greyscale()
         .normalize()
-        .blur(0.3)
-        .threshold(160)
+        .blur(0.5) // Slightly more blur to smooth edges
+        .threshold(150) // Lower threshold to capture more of the character
         .toFile(tempPath);
-      
+
       // Step 2: Detect exact character bounds using edge detection
       const bounds = await detectCharacterBounds(tempPath);
-      
+
       if (!bounds || !bounds.hasContent) {
         console.log(`Skipping empty character: ${char}`);
         continue;
       }
-      
-      // Step 3: Extract just the character (tight crop)
+
+      // Step 3: Extract just the character (tight crop) and normalize size
       await sharp(tempPath)
         .extract({
           left: bounds.left,
@@ -201,10 +227,10 @@ async function extractCharacters(imagePath) {
           background: { r: 255, g: 255, b: 255, alpha: 1 }
         })
         .toFile(outputPath);
-      
+
       characters[char] = outputPath;
       console.log(`✓ Extracted '${char}' - Bounds: ${bounds.width}×${bounds.height}`);
-      
+
     } catch (error) {
       console.error(`Error extracting character ${char}:`, error);
     }
@@ -319,27 +345,29 @@ for i, char in enumerate(charset):
                 matrix = fontforge.psMat.translate(x_offset, y_offset)
                 glyph.transform(matrix)
                 
-                # Set width - extremely tight spacing for realistic handwriting
+                # Set width - extremely tight letter spacing, wider word spacing
                 bbox = glyph.boundingBox()
                 char_width = bbox[2] - bbox[0]
-                
-                # Calculate width based on actual character width with minimal padding
+
+                # Ultra-tight letter spacing (letters almost touching)
+                # Wider space between words for clear separation
                 if char == ' ':
-                    glyph.width = 120  # Very small space
+                    glyph.width = 800  # Space between words
                 elif char in '.,;:!?':
-                    glyph.width = int(char_width + 20)  # Minimal padding
+                    glyph.width = int(char_width * 1.005)  # Punctuation: 0.5% padding
                 elif char in 'ij|lI':
-                    glyph.width = int(char_width + 25)  # Narrow letters
+                    glyph.width = int(char_width * 1.005)  # Narrow letters: 0.5% padding
                 elif char in 'mMwW':
-                    glyph.width = int(char_width + 30)  # Wide letters
+                    glyph.width = int(char_width * 1.005)  # Wide letters: 0.5% padding
                 elif char in 'tfrk':
-                    glyph.width = int(char_width + 22)  # Slightly narrow
+                    glyph.width = int(char_width * 1.005)  # Medium letters: 0.5% padding
                 else:
-                    glyph.width = int(char_width + 25)  # Default - 20-30 pixels padding
-                
-                # Zero side bearings - characters touch
-                glyph.left_side_bearing = 0
-                glyph.right_side_bearing = 0
+                    glyph.width = int(char_width * 1.005)  # Default: 0.5% padding (ultra-tight)
+
+                # Nearly zero side bearings - letters will touch
+                side_bearing = 0  # No side bearing - letters touching
+                glyph.left_side_bearing = side_bearing
+                glyph.right_side_bearing = side_bearing
                     
                 processed_count += 1
                 print(f"Processed character '{char}' (U+{unicode_val:04X}) - Width: {glyph.width}")

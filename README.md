@@ -1,238 +1,244 @@
-# 🎨 Handwriting Font Creator & AI Assignment Helper
+# ✍️ Custom Handwriting Font Generator
 
-A comprehensive web application that converts your handwriting into a professional custom font and helps generate assignments in your handwriting style using AI.
+Transform your unique handwriting into a professional TrueType font with AI-powered features!
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)
-![React](https://img.shields.io/badge/react-18.2.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## ✨ Features
+---
 
-### 🖋️ Font Creator
-- **Template Generation**: Download a customizable template grid
-- **Handwriting Capture**: Fill in the template with your unique handwriting
-- **AI Processing**: Automatic character extraction and vectorization using Potrace
-- **Font Generation**: Create professional TTF fonts using FontForge
-- **Character Preview**: View all extracted characters before downloading
+## 🌟 Features
+
+### 🎨 Font Creator
+- Download customizable handwriting template
+- Upload filled template (scan/photo)
+- Automatic character extraction and cleaning
+- Professional TTF font generation with FontForge
+- Preview all characters before download
 
 ### 📝 Font Printer
-- **Font Preview**: Test your custom font with any text
-- **Document Upload**: Support for .txt, .md files
-- **Notebook View**: Preview text on realistic lined paper
-- **Export Options**: Download your text files
+- Upload your custom font
+- Type or paste text
+- Preview on notebook paper with custom font
+- Download formatted text
 
-### 📚 AI Assignment Helper
-- **AI-Powered Content**: Generate assignment content using OpenRouter's free models
-- **Custom Font Display**: View generated content in your handwriting font
-- **Smart Fallback**: Automatically tries multiple AI models for reliability
-- **Export Options**: Download as Word document or PDF
-- **Real-time Preview**: See content as it's generated
+### 🤖 AI Assignment Helper
+- Generate content with AI (OpenRouter)
+- Display in your handwriting font
+- Export to Word or PDF
+- Perfect for students
 
-## 🚀 Tech Stack
+---
+
+## 🚀 Quick Start
+
+### Local Development
+
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/your-username/cgfont.git
+   cd cgfont
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   # Backend
+   cd backend
+   npm install
+
+   # Frontend
+   cd ../frontend
+   npm install
+   ```
+
+3. **Setup environment:**
+   ```bash
+   # Backend - create .env file
+   cp backend/.env.example backend/.env
+   # Add your OPENROUTER_API_KEY
+
+   # Frontend - already configured for local dev
+   ```
+
+4. **Run application:**
+   ```bash
+   # Terminal 1 - Backend
+   cd backend
+   npm start
+
+   # Terminal 2 - Frontend
+   cd frontend
+   npm run dev
+   ```
+
+5. **Open browser:**
+   ```
+   http://localhost:5173
+   ```
+
+---
+
+## 📦 Deployment
+
+**Backend:** Render.com (Docker with FontForge)
+**Frontend:** Vercel (Optimized Vite build)
+
+### Quick Deploy
+
+See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for one-page guide
+
+### Full Guide
+
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for comprehensive instructions
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 - React 18
-- Vite
-- TailwindCSS 4
-- Lucide React Icons
+- Vite 7
+- Tailwind CSS 4
+- Lucide Icons
 
 ### Backend
-- Node.js & Express
-- Sharp (Image Processing)
-- Potrace (Vectorization)
-- FontForge (Font Generation)
-- Multer (File Upload)
-- OpenRouter API (AI Integration)
+- Node.js + Express
+- FontForge + Python 3
+- Sharp (image processing)
+- Potrace (vectorization)
+- OpenRouter API (AI)
 
-## 📦 Installation
+---
 
-### Prerequisites
-- Node.js >= 16.0.0
-- FontForge (for font generation)
-- Python 3 (for FontForge scripts)
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/cgfont.git
-cd cgfont
-```
-
-### 2. Install FontForge
-
-**Windows:**
-```bash
-# Download and install from https://fontforge.org/en-US/downloads/
-```
-
-**Mac:**
-```bash
-brew install fontforge
-```
-
-**Linux:**
-```bash
-sudo apt-get install fontforge python3-fontforge
-```
-
-### 3. Backend Setup
-```bash
-cd backend
-npm install
-
-# Create .env file
-cp .env.example .env
-```
-
-Edit `.env` and add your OpenRouter API key:
-```
-OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
-```
-
-Get a free API key at [OpenRouter.ai](https://openrouter.ai/)
-
-### 4. Frontend Setup
-```bash
-cd ../frontend
-npm install
-```
-
-## 🎯 Usage
-
-### Start the Backend Server
-```bash
-cd backend
-npm start
-```
-Server runs on `http://localhost:3001`
-
-### Start the Frontend
-```bash
-cd frontend
-npm run dev
-```
-App runs on `http://localhost:5173`
-
-## 📖 How It Works
-
-### Creating a Custom Font
-
-1. **Download Template**: Get the character grid template
-2. **Fill Template**: Write each character clearly in its cell
-3. **Upload**: Scan/photograph and upload the completed template
-4. **Process**: AI extracts and vectorizes each character
-5. **Download**: Get your custom TTF font file
-
-### Using AI Assignment Helper
-
-1. **Upload Font**: Add your custom .ttf font file
-2. **Enter Prompt**: Describe your assignment requirements
-3. **Generate**: AI creates content using free models with automatic fallback
-4. **Preview**: View content in your handwriting font
-5. **Export**: Download as Word or PDF
-
-## 🤖 AI Models
-
-The system automatically tries multiple free models:
-- Qwen 2 7B (Primary)
-- Meta Llama 3.2 3B (Fallback)
-- Microsoft Phi-3 Mini (Fallback)
-- Google Gemma 2 9B (Fallback)
-
-If one model is rate-limited, it automatically switches to the next available model.
-
-## 🛠️ Configuration
-
-### Changing AI Models
-Edit `backend/server.js` line 522-528 to customize the model list:
-```javascript
-const freeModels = [
-  'your-preferred-model:free',
-  'fallback-model:free'
-];
-```
-
-### Frontend Configuration
-Edit `frontend/vite.config.js` for build settings and API proxy configuration.
-
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
 cgfont/
-├── backend/
-│   ├── server.js          # Express server
-│   ├── uploads/           # Temporary uploads (gitignored)
-│   ├── downloads/         # Generated fonts (gitignored)
-│   └── temp/              # Processing files (gitignored)
-├── frontend/
+├── frontend/                # React frontend
 │   ├── src/
-│   │   ├── components/
+│   │   ├── components/     # React components
 │   │   │   ├── HandwritingFontCreator.jsx
 │   │   │   ├── FontPrinter.jsx
 │   │   │   └── AssignmentHelper.jsx
 │   │   ├── App.jsx
 │   │   └── main.jsx
+│   ├── Dockerfile          # Docker config
+│   ├── vercel.json         # Vercel settings
 │   └── package.json
-└── README.md
+│
+├── backend/                 # Node.js backend
+│   ├── server.js           # Express server + FontForge
+│   ├── Dockerfile          # Docker config
+│   └── package.json
+│
+├── docker-compose.yml      # Local Docker testing
+├── render.yaml             # Render deployment
+├── DEPLOYMENT_GUIDE.md     # Full deployment guide
+├── QUICK_DEPLOY.md         # Quick reference
+└── README.md               # This file
 ```
-
-## 🔒 Security Notes
-
-- Never commit your `.env` file
-- Keep your OpenRouter API key private
-- The API key is only used on the backend (not exposed to frontend)
-- All uploaded files are processed locally
-
-## 🐛 Troubleshooting
-
-### Font Generation Issues
-- Ensure FontForge is installed and in your PATH
-- Check that Python 3 is available
-- Verify uploaded image is clear and high contrast
-
-### AI Generation Errors
-- Check your OpenRouter API key in `.env`
-- Restart backend server after changing `.env`
-- Check backend console for detailed error messages
-- Free models may have rate limits - system will try alternatives
-
-### Common Errors
-
-**"OpenRouter API key not configured"**
-- Create `.env` file in backend directory
-- Add your API key
-- Restart backend server
-
-**"All models failed"**
-- Free models are temporarily rate-limited
-- Wait a few minutes and try again
-- Consider adding credits to your OpenRouter account
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [FontForge](https://fontforge.org/) - Font editing software
-- [Potrace](http://potrace.sourceforge.net/) - Bitmap tracing
-- [OpenRouter](https://openrouter.ai/) - AI model API
-- [TailwindCSS](https://tailwindcss.com/) - Styling
-- [React](https://react.dev/) - UI Framework
-
-## 📞 Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
 
 ---
 
-Made with ❤️ by [Your Name]
+## 🎯 How It Works
+
+1. **Template Generation**
+   - Creates grid with cells for each character
+   - Includes labels and guide lines
+
+2. **Character Extraction**
+   - Processes uploaded image with Sharp
+   - Extracts individual characters
+   - Removes borders and noise
+   - Detects character bounds
+
+3. **Vectorization**
+   - Converts bitmap to SVG with Potrace
+   - Optimizes curves for smooth rendering
+
+4. **Font Creation**
+   - Generates TTF with FontForge Python API
+   - Auto-scales and positions glyphs
+   - Optimizes spacing for natural handwriting
+   - Exports professional font file
+
+---
+
+## ⚙️ Configuration
+
+### Spacing Customization
+
+Edit `backend/server.js` lines 348-370:
+
+```python
+# Letter spacing (tighter = smaller number)
+glyph.width = int(char_width * 1.005)  # 0.5% padding
+
+# Word spacing (larger = more space)
+if char == ' ':
+    glyph.width = 800
+
+# Side bearings (0 = touching)
+side_bearing = 0
+```
+
+### Character Set
+
+Modify `backend/server.js` lines 40-47 to add/remove characters.
+
+---
+
+## 🔧 Troubleshooting
+
+### FontForge Errors
+**Issue:** Font generation fails
+**Solution:** Check Docker is running, ensure sufficient memory
+
+### Character Quality
+**Issue:** Characters have borders or artifacts
+**Solution:** Increase template padding, use high-res scan (300 DPI+)
+
+### Spacing Issues
+**Issue:** Letters too far/close
+**Solution:** Adjust multipliers in server.js (see Configuration)
+
+### API Errors
+**Issue:** OpenRouter API fails
+**Solution:** Check API key, verify rate limits
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create feature branch
+3. Commit your changes
+4. Push to branch
+5. Open pull request
+
+---
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+---
+
+## 🙏 Acknowledgments
+
+- **FontForge** - Font creation engine
+- **OpenRouter** - AI API platform
+- **Potrace** - Bitmap tracing
+- **Sharp** - Image processing
+
+---
+
+## 📞 Support
+
+- **Issues:** [GitHub Issues](https://github.com/your-username/cgfont/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/your-username/cgfont/discussions)
+
+---
+
+**Made with ❤️ for handwriting enthusiasts**

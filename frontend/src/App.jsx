@@ -11,7 +11,7 @@ function App() {
       {/* Navigation Bar - Fixed at top */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm shadow-md">
         <div className="w-full px-4 md:px-8 py-3 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-800">Handwriting Font App</h1>
+          <h1 className="text-xl font-bold text-gray-800">Handwriting BoT Printer</h1>
           <div className="flex gap-3">
             <button
               onClick={() => setCurrentPage('creator')}

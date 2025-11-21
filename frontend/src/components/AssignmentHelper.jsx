@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Send, Upload, Download, FileText, Loader2, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 function AssignmentHelper() {
   const [prompt, setPrompt] = useState('');
   const [fontFile, setFontFile] = useState(null);
@@ -52,7 +54,7 @@ function AssignmentHelper() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/generate-assignment', {
+      const response = await fetch(`${API_URL}/api/generate-assignment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +81,7 @@ function AssignmentHelper() {
     if (!generatedContent) return;
 
     try {
-      const response = await fetch('http://localhost:3001/api/export-word', {
+      const response = await fetch(`${API_URL}/api/export-word`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
